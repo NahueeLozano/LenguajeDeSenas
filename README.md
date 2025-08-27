@@ -10,6 +10,7 @@
 Este sistema reconoce:
 - Letras del abecedario (a-z)
 - Números (0-9)
+
 - Palabras simples
 - Frases complejas
 
@@ -145,7 +146,7 @@ Distribuido bajo la licencia MIT. Uso libre con fines educativos y de investigac
 📧 ricardo.leiton@gmail.com  
 🐙 GitHub: [@ricardoleiton](https://github.com/ricardoleiton)
 
-**Aldana Cáceres**  
+**Aldana Cáseres**  
 📧 aldiicaseres@gmail.com  
 
 **Priscila Tayura**  

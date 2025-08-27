@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Administración</title>
+</head>
+<body>
+    <h2>Panel de Administración</h2>
+    <p>Seleccione una opción:</p>
+
+    <a href="{% url 'agregar_alumno' %}">
+        <button>Agregar Alumno</button>
+    </a>
+
+    <a href="{% url 'lista_alumnos' %}">
+        <button>Lista de Alumnos</button>
+    </a>
+
+    <br><br>
+    <a href="{% url 'index' %}">Volver al menú principal</a>
+</body>
+</html>

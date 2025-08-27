@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Menú principal</title>
+</head>
+
+<body>
+    <h1>Menú principal</h1>
+
+    <p>¡BIENVENID@ {{ usuario.first_name|default:usuario.username }}!</p>
+
+    <div>
+        <button onclick="location.href='{% url 'entrenar' %}'">Entrenar</button>
+        <button onclick="location.href='{% url 'administracion' %}'">Administración</button>
+    </div>
+
+    <footer>
+        <a href="{% url 'logout' %}">Cerrar sesión</a>
+    </footer>
+</body>
+
+</html>
