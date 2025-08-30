@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Agregar alumno</title>
+</head>
+<body>
+    <h2>Agregar alumno</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Guardar</button>
+    </form>
+    <a href="{% url 'lista_alumnos' %}">Ver lista de alumnos</a>
+</body>
+</html>
+      

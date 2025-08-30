@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Entrenar</title>
+</head>
+<body>
+  <h2>Entrenar desde cámara</h2>
+
+  <!-- Video en vivo -->
+  <video id="camara" width="400" height="300" autoplay></video>
+  <br>
+
+  <!-- Botón para tomar una imagen -->
+  <button onclick="capturar()">Capturar</button>
+  <canvas id="canvas" width="400" height="300" style="display:none;"></canvas>
+
+  <!-- Formulario para enviar la imagen capturada -->
+  <form method="POST" enctype="multipart/form-data" action="{% url 'entrenar' %}">
+      {% csrf_token %}
+      <input type="hidden" name="imagen" id="imagen_input">
+      <button type="submit">Enviar imagen al servidor</button>
+  </form>
+
+  {% if mensaje %}
+    <p>{{ mensaje }}</p>
+  {% endif %}
+
+  <script>
+    const video = document.getElementById('camara');
+    const canvas = document.getElementById('canvas');
+    const imagenInput = document.getElementById('imagen_input');
+
+    // Activar cámara
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+      });
+
+    // Capturar imagen
+    function capturar() {
+      canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/png');
+      imagenInput.value = dataUrl;
+    }
+  </script>
+</body>
+</html>

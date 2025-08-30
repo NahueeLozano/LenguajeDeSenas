@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de alumnos</title>
+</head>
+<body>
+    <h2>Lista de alumnos</h2>
+    <table border="1">
+        <tr>
+            <th>Nombre</th>
+            <th>Nombre de usuario</th>
+            <th>Contraseña</th>
+            <th>Eliminar</th>
+        </tr>
+        {% for alumno in alumnos %}
+        <tr>
+            <td>{{ alumno.nombre }}</td>
+            <td>{{ alumno.username }}</td>
+            <td>{{ alumno.contrasena }}</td>
+            <td><a href="{% url 'eliminar_alumno' alumno.id %}">Eliminar</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="{% url 'agregar_alumno' %}">Agregar nuevo alumno</a>
+</body>
+</html>
