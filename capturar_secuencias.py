@@ -14,6 +14,7 @@ from utils import (
 # Esta función es útil para que el usuario vea si sus gestos están siendo bien capturados
 def draw_holistic_landmarks(frame, results):
     import mediapipe as mp
+    
     mp_drawing = mp.solutions.drawing_utils
     if results.face_landmarks:
         mp_drawing.draw_landmarks(frame, results.face_landmarks, mp.solutions.holistic.FACEMESH_TESSELATION)
@@ -51,7 +52,7 @@ def esperar_confirmacion_inicio(cap, holistic):
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q'):
             return False
-        elif key == ord('c'):
+        elif key == ord('c') or key == ord('C'):
             return True
 
 # Captura una secuencia de 30 frames (por Config), guarda los landmarks y los frames sin dibujos para el gif

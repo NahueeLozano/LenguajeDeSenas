@@ -113,5 +113,28 @@ def main():
     holistic.close()
     print("\n👋 Predicción finalizada.")
 
+def predecir_desde_imagen(imagen):
+    import mediapipe as mp
+    import numpy as np
+    from tensorflow.keras.models import load_model
+    from utils import extract_holistic_landmarks, normalize_landmarks, validate_landmarks, Config
+
+    mp_holistic = mp.solutions.holistic
+    with mp_holistic.Holistic(static_image_mode=True) as holistic:
+        frame = np.array(imagen.convert('RGB'))
+        frame = frame[:, :, ::-1]  # RGB a BGR
+        results = holistic.process(frame)
+        landmarks = extract_holistic_landmarks(results)
+        if not validate_landmarks(landmarks):
+            return "sin_seña"
+        landmarks_norm = normalize_landmarks(landmarks)
+        # Repite el mismo vector 30 veces para simular una secuencia
+        secuencia = np.array([landmarks_norm] * 30).reshape(1, 30, 147)
+        modelo = load_model(Config.MODEL_PATH)
+        etiquetas = np.load(Config.LABELS_PATH, allow_pickle=True)
+        pred = modelo.predict(secuencia)
+        clase_idx = np.argmax(pred)
+        return etiquetas[clase_idx]
+
 if __name__ == '__main__':
     main()

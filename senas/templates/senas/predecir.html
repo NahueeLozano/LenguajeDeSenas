@@ -1,0 +1,67 @@
+<!-- filepath: c:\Users\nahuel lozano\Desktop\lenguajeDeSenas\senas\templates\senas\predecir.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Predicción de Seña</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 30px; }
+    #resultado { font-size: 1.5em; color: #007b00; margin-top: 20px; }
+    #camara { border: 2px solid #333; }
+    button { margin-top: 10px; padding: 10px 20px; font-size: 1em; }
+  </style>
+</head>
+<body>
+  <h2>Predicción de Seña desde Cámara</h2>
+
+  <!-- Video en vivo -->
+  <video id="camara" width="400" height="300" autoplay></video>
+  <br>
+
+  <!-- Botón para capturar imagen y predecir -->
+  <button onclick="capturar()">Predecir Seña</button>
+  <canvas id="canvas" width="400" height="300" style="display:none;"></canvas>
+
+  <!-- Formulario para enviar la imagen capturada -->
+  <form method="POST" enctype="multipart/form-data" action="{% url 'predecir' %}">
+      {% csrf_token %}
+      <input type="hidden" name="imagen" id="imagen_input">
+      <button type="submit">Enviar imagen al servidor</button>
+  </form>
+
+  <!-- Resultado de la predicción y GIF -->
+  <div id="resultado">
+    {% if resultado %}
+      <strong>Seña detectada:</strong> {{ resultado }}
+    {% endif %}
+    {% if mensaje %}
+      <p>{{ mensaje }}</p>
+    {% endif %}
+    {% if gif_url %}
+      <div>
+        <h3>GIF de referencia:</h3>
+        <img src="{{ gif_url }}" alt="GIF de la seña" width="300">
+      </div>
+    {% endif %}
+  </div>
+
+  <script>
+    const video = document.getElementById('camara');
+    const canvas = document.getElementById('canvas');
+    const imagenInput = document.getElementById('imagen_input');
+
+    // Activar cámara
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+      });
+
+    // Capturar imagen y guardar en input oculto
+    function capturar() {
+      canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/png');
+      imagenInput.value = dataUrl;
+    }
+  </script>
+</body>
+</html>

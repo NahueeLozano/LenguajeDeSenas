@@ -8,6 +8,7 @@ from django.contrib.auth import logout
 from django.http import HttpResponse
 from .models import Alumno
 from .forms import AlumnoForm
+from predecir_secuencias import predecir_desde_imagen
 
 # Agrega al PATH de Python la carpeta donde está el script entrenar_modelo.py
 # Esto permite importar funciones que están fuera de la carpeta del proyecto Django
@@ -57,9 +58,51 @@ def entrenar_modelo(request):
             # Llama a la función que entrena el modelo
             entrenar_modelo_main()
             mensaje = "✅ Entrenamiento completado correctamente."
+            print(mensaje)
         except Exception as e:
             mensaje = f"❌ Error durante el entrenamiento: {e}"
     return render(request, 'senas/entrenar.html', {'mensaje': mensaje})
+# Vista para predecir señas
+import base64
+from PIL import Image
+from io import BytesIO
+import os
+
+import base64
+from PIL import Image
+from io import BytesIO
+import os
+
+def predecir(request):
+    mensaje = ""
+    resultado = ""
+    gif_url = None
+    if request.method == "POST":
+        imagen_b64 = request.POST.get("imagen")
+        if imagen_b64:
+            header, data = imagen_b64.split(',', 1)
+            imagen_bytes = base64.b64decode(data)
+            imagen = Image.open(BytesIO(imagen_bytes))
+            # Aquí deberías procesar la imagen con MediaPipe y tu modelo
+            resultado = predecir_desde_imagen(imagen) # Simulación, reemplaza por tu resultado real
+
+            # Busca el GIF en la carpeta gifs/
+            gif_path = os.path.join("gifs", f"{resultado}.gif")
+            if os.path.exists(gif_path):
+                gif_url = f"/gifs/{resultado}.gif"
+                mensaje = "✅ Seña detectada y GIF mostrado."
+            else:
+                mensaje = "✅ Seña detectada, pero no hay GIF guardado."
+        else:
+            mensaje = "❌ No se recibió imagen."
+    return render(request, 'senas/predecir.html', {
+        'mensaje': mensaje,
+        'resultado': resultado,
+        'gif_url': gif_url
+    })
+
+
+
 
 # Página de administración (botones para agregar/listar alumnos)
 @login_required
