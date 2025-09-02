@@ -149,11 +149,8 @@ Distribuido bajo la licencia MIT. Uso libre con fines educativos y de investigac
 📧 lozano.nahuel88@gmail.com 
 🐙 GitHub: [@NahueeLozano](https://github.com/NahueeLozano)
 
-**Aldana Cáceres**  
+**Aldana Cáseres**  
 📧 aldiicaseres@gmail.com  
-
-**Priscila Tayura**  
-📧 priscilatayura@gmail.com
 
 **Gimena Perez**  
 📧 gimeperez1991@gmail.com  

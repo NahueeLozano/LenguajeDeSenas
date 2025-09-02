@@ -1,5 +1,6 @@
 import os
 import sys
+from pathlib import Path
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login as login_django
 from django.contrib.auth import authenticate
@@ -9,84 +10,78 @@ from django.http import HttpResponse
 from .models import Alumno
 from .forms import AlumnoForm
 from predecir_secuencias import predecir_desde_imagen
+import base64
+from PIL import Image
+from io import BytesIO
 
-# Agrega al PATH de Python la carpeta donde está el script entrenar_modelo.py
-# Esto permite importar funciones que están fuera de la carpeta del proyecto Django
-sys.path.append(r"C:\Users\w10-21h2\OneDrive\Documentos\ds 2025\programacion\Lengua_de_senas")
+# 🔹 Ruta dinámica al archivo entrenar_modelo.py (portátil)
+BASE_DIR = Path(__file__).resolve().parents[2]  # Sube dos niveles desde /senas/views.py
+sys.path.append(str(BASE_DIR))
 
-# Importa la función main() del archivo entrenar_modelo.py
+# 🔹 Importa la función principal de entrenamiento
 from entrenar_modelo import main as entrenar_modelo_main
 
-# Vista principal, muestra la página index.html
-# Pasa el usuario autenticado a la plantilla
+
+# -----------------------------
+# VISTAS
+# -----------------------------
+
+# Vista principal
 def index(request):
     return render(request, 'senas/index.html', {'usuario': request.user})
+
 
 # Vista de inicio de sesión
 def login_view(request):
     if request.method == 'POST':
-        # Obtiene el usuario y contraseña desde el formulario
         username = request.POST.get('username')
         password = request.POST.get('password')
-        print("Usuario: ", username)
-        print("Contraseña: ", password)
 
-        # Verifica si existe un usuario con esas credenciales
         user = authenticate(username=username, password=password)
         if user:
-            # Si existe, inicia sesión
             login_django(request, user)
-            return redirect('index')  # Redirige al menú principal
+            return redirect('index')
         else:
-            # Si las credenciales son inválidas, muestra un error
             return render(request, 'senas/login.html', {'error': 'Credenciales inválidas'})   
-        
-    # Si el método no es POST, solo muestra el formulario
     return render(request, 'senas/login.html', {})
 
-# Cierra la sesión y redirige al login
+
+# Cerrar sesión
 def logout_view(request):
     logout(request)
     return redirect('login')
 
+
 # Vista para entrenar el modelo
-@login_required  # Solo usuarios autenticados pueden acceder
+@login_required
 def entrenar_modelo(request):
     mensaje = ""
     if request.method == "POST":
         try:
-            # Llama a la función que entrena el modelo
             entrenar_modelo_main()
             mensaje = "✅ Entrenamiento completado correctamente."
-            print(mensaje)
         except Exception as e:
             mensaje = f"❌ Error durante el entrenamiento: {e}"
     return render(request, 'senas/entrenar.html', {'mensaje': mensaje})
+
+
 # Vista para predecir señas
-import base64
-from PIL import Image
-from io import BytesIO
-import os
-
-import base64
-from PIL import Image
-from io import BytesIO
-import os
-
 def predecir(request):
     mensaje = ""
     resultado = ""
     gif_url = None
+
     if request.method == "POST":
         imagen_b64 = request.POST.get("imagen")
         if imagen_b64:
             header, data = imagen_b64.split(',', 1)
             imagen_bytes = base64.b64decode(data)
             imagen = Image.open(BytesIO(imagen_bytes))
-            # Aquí deberías procesar la imagen con MediaPipe y tu modelo
-            resultado = predecir_desde_imagen(imagen) # Simulación, reemplaza por tu resultado real
 
-            # Busca el GIF en la carpeta gifs/
+            # Usa tu función de predicción
+            resultado = predecir_desde_imagen(imagen)
+
+            # Buscar GIF asociado
             gif_path = os.path.join("gifs", f"{resultado}.gif")
             if os.path.exists(gif_path):
                 gif_url = f"/gifs/{resultado}.gif"
@@ -95,6 +90,7 @@ def predecir(request):
                 mensaje = "✅ Seña detectada, pero no hay GIF guardado."
         else:
             mensaje = "❌ No se recibió imagen."
+
     return render(request, 'senas/predecir.html', {
         'mensaje': mensaje,
         'resultado': resultado,
@@ -102,34 +98,35 @@ def predecir(request):
     })
 
 
-
-
-# Página de administración (botones para agregar/listar alumnos)
+# Administración
 @login_required
 def administracion(request):
     return render(request, 'senas/administracion.html')
 
-# Vista para agregar un alumno usando un formulario
+
+# Agregar alumno
 @login_required
 def agregar_alumno(request):
     if request.method == 'POST':
         form = AlumnoForm(request.POST)
         if form.is_valid():
-            form.save()  # Guarda el nuevo alumno en la base de datos
+            form.save()
             return redirect('lista_alumnos')
     else:
         form = AlumnoForm()
     return render(request, 'senas/agregar_alumno.html', {'form': form})
 
-# Vista que lista todos los alumnos
+
+# Listar alumnos
 @login_required
 def lista_alumnos(request):
-    alumnos = Alumno.objects.all()  # Obtiene todos los registros de alumnos
+    alumnos = Alumno.objects.all()
     return render(request, 'senas/lista_alumnos.html', {'alumnos': alumnos})
 
-# Elimina un alumno específico por ID
+
+# Eliminar alumno
 @login_required
 def eliminar_alumno(request, alumno_id):
-    alumno = get_object_or_404(Alumno, id=alumno_id)  # Si no existe, devuelve 404
+    alumno = get_object_or_404(Alumno, id=alumno_id)
     alumno.delete()
     return redirect('lista_alumnos')
