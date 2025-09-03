@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -11,7 +12,10 @@
         {{ form.as_p }}
         <button type="submit">Guardar</button>
     </form>
-    <a href="{% url 'lista_alumnos' %}">Ver lista de alumnos</a>
+ <button>
+    <a href="{% url 'index' %}" class="btn-volver">⬅️ Volver</a>
+
+  </button>
 </body>
 </html>
       
